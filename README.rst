@@ -1,5 +1,5 @@
-CANopen for Python
-==================
+Test test test test
+===================
 
 A Python implementation of the CANopen_ standard.
 The aim of the project is to support the most common parts of the CiA 301
