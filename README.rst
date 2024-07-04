@@ -1,4 +1,4 @@
-Test test test test
+TEST TEST TEST TEST
 ===================
 
 A Python implementation of the CANopen_ standard.
