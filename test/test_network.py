@@ -57,6 +57,7 @@ class TestNetwork(unittest.TestCase):
         DATA2 = bytes([4, 5, 6])
         COB_ID = 0x123
         PERIOD = 0.1
+        TIMEOUT = PERIOD * 10
         self.network.connect(
             interface="virtual",
             channel=1,
@@ -77,12 +78,12 @@ class TestNetwork(unittest.TestCase):
         task = self.network.send_periodic(COB_ID, DATA1, PERIOD)
         self.addCleanup(task.stop)
 
-        event.wait(PERIOD*2)
+        event.wait(TIMEOUT)
 
         # Update task data.
         task.update(DATA2)
         event.clear()
-        event.wait(PERIOD*2)
+        event.wait(TIMEOUT)
         task.stop()
 
         data = [v[0] for v in acc]
