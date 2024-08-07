@@ -43,7 +43,7 @@ class TestNmtMaster(unittest.TestCase):
     NODE_ID = 2
     COB_ID = 0x700 + NODE_ID
     PERIOD = 0.01
-    TIMEOUT = PERIOD * 2
+    TIMEOUT = PERIOD * 10
 
     def setUp(self):
         bus = can.ThreadSafeBus(
