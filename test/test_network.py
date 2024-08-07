@@ -286,7 +286,8 @@ class TestNetwork(unittest.TestCase):
 
 
 class TestScanner(unittest.TestCase):
-    TIMEOUT = 0.1
+    TIMEOUT = 0.25
+    PAYLOAD = bytes([64, 0, 16, 0, 0, 0, 0, 0])
 
     def setUp(self):
         self.scanner = canopen.network.NodeScanner()
@@ -329,13 +330,12 @@ class TestScanner(unittest.TestCase):
         self.scanner.network = net
         self.scanner.search()
 
-        payload = bytes([64, 0, 16, 0, 0, 0, 0, 0])
-        acc = [bus.recv(self.TIMEOUT) for _ in range(127)]
-        for node_id, msg in enumerate(acc, start=1):
+        for node_id in range(1, 128):
             with self.subTest(node_id=node_id):
+                msg = bus.recv(self.TIMEOUT)
                 self.assertIsNotNone(msg)
                 self.assertEqual(msg.arbitration_id, 0x600 + node_id)
-                self.assertEqual(msg.data, payload)
+                self.assertEqual(msg.data, self.PAYLOAD)
         # Check that no spurious packets were sent.
         self.assertIsNone(bus.recv(self.TIMEOUT))
 
@@ -350,6 +350,7 @@ class TestScanner(unittest.TestCase):
 
         msg = bus.recv(self.TIMEOUT)
         self.assertIsNotNone(msg)
+        self.assertEqual(msg.data, self.PAYLOAD)
         self.assertEqual(msg.arbitration_id, 0x601)
         # Check that no spurious packets were sent.
         self.assertIsNone(bus.recv(self.TIMEOUT))
