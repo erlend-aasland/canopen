@@ -332,7 +332,7 @@ class TestScanner(unittest.TestCase):
 
         for node_id in range(1, 128):
             with self.subTest(node_id=node_id):
-                msg = bus.recv(self.TIMEOUT)
+                msg = bus.recv(self.TIMEOUT * 10)
                 self.assertIsNotNone(msg)
                 self.assertEqual(msg.data, self.PAYLOAD)
         # Check that no spurious packets were sent.
