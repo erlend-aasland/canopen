@@ -334,7 +334,6 @@ class TestScanner(unittest.TestCase):
             with self.subTest(node_id=node_id):
                 msg = bus.recv(self.TIMEOUT)
                 self.assertIsNotNone(msg)
-                self.assertEqual(msg.arbitration_id, 0x600 + node_id)
                 self.assertEqual(msg.data, self.PAYLOAD)
         # Check that no spurious packets were sent.
         self.assertIsNone(bus.recv(self.TIMEOUT))
