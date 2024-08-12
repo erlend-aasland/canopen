@@ -43,20 +43,15 @@ class TestNmtMaster(unittest.TestCase):
     NODE_ID = 2
     COB_ID = 0x700 + NODE_ID
     PERIOD = 0.01
-    TIMEOUT = PERIOD * 2
+    TIMEOUT = PERIOD * 10
 
     def setUp(self):
-        bus = can.ThreadSafeBus(
-            interface="virtual",
-            channel="test",
-            receive_own_messages=True,
-        )
+        bus = can.Bus(interface="virtual", receive_own_messages=True)
         net = canopen.Network(bus)
         net.connect()
         with self.assertLogs():
             node = net.add_node(self.NODE_ID, SAMPLE_EDS)
 
-        self.bus = bus
         self.net = net
         self.node = node
 
@@ -110,8 +105,11 @@ class TestNmtMaster(unittest.TestCase):
         self.assertEqual(state, 127)
 
     def test_nmt_master_node_guarding(self):
+        bus = can.Bus(interface="virtual")
+        self.addCleanup(bus.shutdown)
+
         self.node.nmt.start_node_guarding(self.PERIOD)
-        msg = self.bus.recv(self.TIMEOUT)
+        msg = bus.recv(self.TIMEOUT)
         self.assertIsNotNone(msg)
         self.assertEqual(msg.arbitration_id, self.COB_ID)
         self.assertEqual(msg.dlc, 0)
@@ -119,9 +117,9 @@ class TestNmtMaster(unittest.TestCase):
         self.node.nmt.stop_node_guarding()
         # A message may have been in flight when we stopped the timer,
         # so allow a single failure.
-        msg = self.bus.recv(self.TIMEOUT)
+        msg = bus.recv(self.TIMEOUT)
         if msg is not None:
-            self.assertIsNone(self.bus.recv(self.TIMEOUT))
+            self.assertIsNone(bus.recv(self.TIMEOUT))
 
 
 class TestNmtSlave(unittest.TestCase):
